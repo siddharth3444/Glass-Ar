@@ -83,6 +83,7 @@ function setGlassesToScene(objName){
     })
 }
 
+
 function getFaceMask(){
     new OBJLoader().load(process.env.PUBLIC_URL+'/obj/facemesh.obj', obj => {
         obj.traverse(child => {
