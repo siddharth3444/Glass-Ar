@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {MTLLoader} from 'three/examples/jsm/loaders/MTLLoader';
 import {OBJLoader} from 'three/examples/jsm/loaders/OBJLoader';
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader';
 import * as facemesh from '@tensorflow-models/facemesh';
 import * as tf from '@tensorflow/tfjs-core';
 
@@ -19,9 +20,16 @@ let videoSprite;
 let windowWidth = 640;
 let windowHeight = 480;
 
-function setVideoContent(){
-    camera = new THREE.PerspectiveCamera(50, video.videoWidth / video.videoHeight, 1, 5000);
+var glass="/obj/Aviaattorit.fbx"
+var scaleFs=8.0;
 
+// var glass="/obj/sunglasses-free/source/oculos.fbx"
+// var scaleFs=0.5;
+
+
+function setVideoContent(){
+    
+    camera = new THREE.PerspectiveCamera(50, video.videoWidth / video.videoHeight, 1, 5000);
     camera.position.z = video.videoHeight;
     camera.position.x = -video.videoWidth / 2;
     camera.position.y = -video.videoHeight / 2;
@@ -35,6 +43,7 @@ function setVideoContent(){
         depthWrite: false,
         side: THREE.DoubleSide
     }));
+    
     scene = new THREE.Scene();
 
     scene.add(videoSprite);
@@ -42,6 +51,7 @@ function setVideoContent(){
     videoSprite.scale.set(-video.videoWidth, video.videoHeight, 1);
     videoSprite.position.copy(camera.position);
     videoSprite.position.z = 0;
+
 }
 
 function setTriangleToScene(){
@@ -68,19 +78,31 @@ function setTheLights(){
 
 function setGlassesToScene(objName){
 
-    var mtlLoader = new MTLLoader();
-    mtlLoader.setMaterialOptions({side:THREE.DoubleSide});
-    mtlLoader.load(process.env.PUBLIC_URL+"/obj/"+objName+'.mtl', materials => {
-        materials.preload();
-        const objLoader = new OBJLoader();
-        objLoader.setMaterials(materials);
-        objLoader.load(process.env.PUBLIC_URL+"/obj/"+objName+'.obj', obj => {
-            glassesObj = obj;
-            glassesObj.name = objName;
-            glassesObj.renderOrder = 3;
-            scene.add(glassesObj);
-        })
-    })
+    // var mtlLoader = new MTLLoader();
+    // mtlLoader.setMaterialOptions({side:THREE.DoubleSide});
+    // mtlLoader.load(process.env.PUBLIC_URL+"/obj/"+objName+'.mtl', materials => {
+    //     materials.preload();
+    //     const objLoader = new OBJLoader();
+    //     objLoader.setMaterials(materials);
+    //     objLoader.load(process.env.PUBLIC_URL+"/obj/"+objName+'.obj', obj => {
+    //         glassesObj = obj;
+    //         glassesObj.name = objName;
+    //         glassesObj.renderOrder = 3;
+    //         scene.add(glassesObj);
+    //     })
+    // })
+
+    var loader = new FBXLoader();
+
+
+
+
+    loader.load(process.env.PUBLIC_URL+glass, function (object) {
+        glassesObj = object;
+        glassesObj.name = objName;
+        glassesObj.renderOrder = 3;
+        scene.add(glassesObj);
+    });
 }
 
 
@@ -203,8 +225,9 @@ async function renderPrediction() {
                 faceObj.position.z -= 40;
                 glassesObj.position.z -= 40;
             }
+ 
 
-            glassesObj.scale.set(scaleFactor,scaleFactor,scaleFactor*1.35);
+            glassesObj.scale.set(scaleFactor*scaleFs,scaleFactor*scaleFs,scaleFactor*1.35*scaleFs);
             const faceScale = scaleFactor * 1.10;
             faceObj.scale.set(faceScale,faceScale,faceScale);
 

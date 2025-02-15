@@ -12,3 +12,6 @@ You can try the glasses on your face.
 
 * **install the modules: `npm install`**
 * **start the development: `npm start`**
+
+
+ $env:NODE_OPTIONS="--openssl-legacy-provider
